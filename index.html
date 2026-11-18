@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>What Kind of Decision-Maker Are You?</title>
+<style>
+/* Layout idea: one question per screen, phone first (students scan a QR code in class); result screen ends on the style and a bar for all five. ProComm brand palette. */
+:root {
+  --bg: #F6F8FA;
+  --surface: #FFFFFF;
+  --ink: #1C2733;
+  --muted: #5D6B78;
+  --line: #D9E1E8;
+  --navy: #00365C;
+  --accent: #3E9099;
+  --accent-soft: #E3F1F2;
+  --amber: #E8A33D;
+  --font: Arial, "Helvetica Neue", Helvetica, sans-serif;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0E1822; --surface: #172431; --ink: #EEF2F5; --muted: #A9B6C2; --line: #2A3A4A;
+    --navy: #8CC3C9; --accent: #6FB3BB; --accent-soft: #1E3540; --amber: #F0B65A;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0E1822; --surface: #172431; --ink: #EEF2F5; --muted: #A9B6C2; --line: #2A3A4A;
+  --navy: #8CC3C9; --accent: #6FB3BB; --accent-soft: #1E3540; --amber: #F0B65A;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 17px; line-height: 1.5; }
+.wrap { max-width: 640px; margin: 0 auto; padding: 20px 18px 40px; display: flex; flex-direction: column; gap: 18px; }
+.eyebrow { font-size: 12px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--accent); margin: 0; }
+h1 { font-size: 26px; line-height: 1.2; margin: 4px 0 6px; color: var(--navy); text-wrap: balance; }
+.intro { margin: 0; color: var(--muted); font-size: 15px; }
+.progress { display: flex; align-items: center; gap: 12px; font-size: 14px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.bar { flex: 1; height: 6px; background: var(--line); border-radius: 3px; overflow: hidden; }
+.bar > span { display: block; height: 100%; background: var(--accent); width: 0; transition: width .25s ease; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 20px 18px; }
+fieldset { border: 0; margin: 0; padding: 0; }
+legend { font-size: 20px; font-weight: 700; line-height: 1.35; margin-bottom: 14px; padding: 0; text-wrap: balance; }
+.opts { display: flex; flex-direction: column; gap: 10px; }
+.opt { display: flex; gap: 12px; align-items: flex-start; border: 1.5px solid var(--line); border-radius: 10px; padding: 13px 14px; cursor: pointer; background: var(--surface); transition: border-color .15s, background .15s; }
+.opt:hover { border-color: var(--accent); }
+.opt input { margin: 3px 0 0; width: 18px; height: 18px; accent-color: var(--accent); flex: none; }
+.opt:has(input:checked) { border-color: var(--accent); background: var(--accent-soft); }
+.opt:has(input:focus-visible) { outline: 3px solid var(--amber); outline-offset: 2px; }
+.nav { display: flex; justify-content: space-between; gap: 12px; }
+button { font: inherit; font-weight: 700; border-radius: 10px; padding: 12px 20px; cursor: pointer; border: 1.5px solid var(--navy); }
+button:focus-visible { outline: 3px solid var(--amber); outline-offset: 2px; }
+.primary { background: var(--navy); color: var(--surface); }
+.primary:disabled { opacity: .4; cursor: not-allowed; }
+.ghost { background: transparent; color: var(--navy); }
+.ghost[hidden] { display: none; }
+.hint { font-size: 13px; color: var(--muted); margin: 0; }
+/* result */
+.result-name { font-size: 34px; font-weight: 700; color: var(--navy); margin: 2px 0 6px; line-height: 1.15; text-wrap: balance; }
+.lede { margin: 0; font-size: 17px; }
+.facts { display: grid; gap: 12px; margin-top: 14px; }
+.fact { border-left: 4px solid var(--accent); padding: 2px 0 2px 12px; }
+.fact b { display: block; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); margin-bottom: 2px; }
+.fact p { margin: 0; }
+.scores { display: grid; gap: 9px; }
+.score { display: grid; grid-template-columns: 96px 1fr 38px; align-items: center; gap: 10px; font-size: 15px; font-variant-numeric: tabular-nums; }
+.score .track { height: 12px; background: var(--line); border-radius: 6px; overflow: hidden; }
+.score .fill { height: 100%; background: var(--accent); border-radius: 6px; }
+.score.top .fill { background: var(--navy); }
+.score.top { font-weight: 700; }
+.score .n { text-align: right; color: var(--muted); }
+.callout { background: var(--navy); color: var(--surface); border-radius: 12px; padding: 18px; }
+.callout h2 { margin: 0 0 6px; font-size: 19px; }
+.callout p { margin: 0; }
+h2.sec { font-size: 17px; margin: 0 0 10px; color: var(--navy); }
+.note { font-size: 13px; color: var(--muted); margin: 0; }
+@media (prefers-reduced-motion: reduce) { .bar > span, .opt { transition: none; } }
+</style>
+</head>
+<body>
+<main class="wrap" id="app">
+  <header>
+    <p class="eyebrow">BUS 3200 · ProComm Global Research</p>
+    <h1>What kind of decision-maker are you?</h1>
+    <p class="intro">Ten everyday decisions. For each one, pick the answer that fits you best, even if more than one does. There are no right answers.</p>
+  </header>
+
+  <section id="quiz" aria-live="polite">
+    <div class="progress"><span id="count">Question 1 of 10</span><div class="bar" aria-hidden="true"><span id="fill"></span></div></div>
+    <form class="card" id="qform" style="margin-top:12px" novalidate>
+      <fieldset>
+        <legend id="qtext"></legend>
+        <div class="opts" id="opts"></div>
+      </fieldset>
+    </form>
+    <div class="nav" style="margin-top:14px">
+      <button type="button" class="ghost" id="back" hidden>Back</button>
+      <button type="button" class="primary" id="next" disabled style="margin-left:auto">Next</button>
+    </div>
+  </section>
+
+  <section id="result" hidden></section>
+
+  <p class="note">Based on the five decision styles in Williams &amp; Miller (2002), “Change the Way You Persuade,” <i>Harvard Business Review</i>. A class discussion tool, not a validated assessment.</p>
+</main>
+
+<script>
+const STYLES = {
+  Charismatic: {
+    lede: "You’re moved by the opportunity: what something could become, and why now.",
+    appeal: "Pathos, then logos: the opportunity first, backed by results.",
+    persuades: "A clear picture of the upside, delivered with energy, followed by proof that it can work.",
+    blind: "You may lead with excitement for a reader who wanted sources, numbers, or a track record first."
+  },
+  Thinker: {
+    lede: "You’re moved by reasoning you can follow: the comparison, the math, the alternatives.",
+    appeal: "Logos: the reasoning and the numbers.",
+    persuades: "Seeing how a recommendation was reached, what it was compared with, and what would change it.",
+    blind: "You may bury the answer under the analysis for a reader who wanted the big idea up front."
+  },
+  Skeptic: {
+    lede: "You’re moved by evidence you can trust: who says so, and whether you can check it.",
+    appeal: "Ethos: sources you can check, from someone who admits what they don’t know.",
+    persuades: "A strong source up front, honesty about the gaps, and a presenter who doesn’t oversell.",
+    blind: "You may hedge so much that a reader who wanted a clear call can’t find one."
+  },
+  Follower: {
+    lede: "You’re moved by precedent: who has done this before, and how it turned out for them.",
+    appeal: "Ethos through precedent: people and cases you can compare with your own situation.",
+    persuades: "A comparable case, an explanation of what’s different this time, and why the difference is manageable.",
+    blind: "You may lean on what others did for a reader who wants the logic or the opportunity instead."
+  },
+  Controller: {
+    lede: "You’re moved by owning the call: the full details, the options, and room to decide yourself.",
+    appeal: "Logos on your terms: evidence you can inspect, and no pressure.",
+    persuades: "The options, the criteria, and access to the underlying information, with time to weigh them.",
+    blind: "You may hand over raw detail without a recommendation to a reader who wanted you to make the call."
+  }
+};
+const ORDER = ["Charismatic", "Thinker", "Skeptic", "Follower", "Controller"];
+
+const QUESTIONS = [
+  { q: "A friend asks you to put $500 into the refurbished e-bike business they’re starting. Before you decide, what do you most want?", o: [
+    ["To hear where they think this could be in two years, and why now is the moment.", "Charismatic"],
+    ["Their cost and pricing math, so you can see whether it actually adds up.", "Thinker"],
+    ["To talk with someone who has started something similar and hear how it went.", "Follower"],
+    ["Their spreadsheet and supplier quotes, so you can run the numbers yourself.", "Controller"]]},
+  { q: "You have two internship offers. A mentor you respect says, “Take the first one.” What would make you most likely to follow her advice?", o: [
+    ["She compares the two on pay, skills, and where each one leads.", "Thinker"],
+    ["She tells you three of her past mentees took that internship and where they are now.", "Follower"],
+    ["She explains how she knows: she has worked with that manager, and she admits what she doesn’t know about the other company.", "Skeptic"],
+    ["She describes what the first one could open up for you.", "Charismatic"]]},
+  { q: "Someone asks you to be a founding officer of a new campus club. Which would most likely make you say no?", o: [
+    ["Twenty minutes of background before they tell you what they want from you.", "Charismatic"],
+    ["They need your answer tonight.", "Controller"],
+    ["Nobody has tried a club like this here before.", "Follower"],
+    ["Big claims about members and sponsors that you can’t confirm.", "Skeptic"]]},
+  { q: "An AI tool gives you a confident answer, with a statistic you need for a paper. What do you do first?", o: [
+    ["Find where the number came from and whether that source is any good.", "Skeptic"],
+    ["Check whether it fits with everything else you know about the topic.", "Thinker"],
+    ["Ask classmates who have used the tool for this kind of question whether it has been reliable.", "Follower"],
+    ["Ask for the underlying data and work it out yourself.", "Controller"]]},
+  { q: "Your roommate wants to move to a newer apartment that costs $90 more a month. What gets you to yes?", o: [
+    ["A side-by-side of both places: total cost, commute, and what you’d give up.", "Thinker"],
+    ["Picturing the year you’d have there: the space, the location, the people nearby.", "Charismatic"],
+    ["Friends who moved there last year say it has been worth it.", "Follower"],
+    ["Reading the lease, touring it yourself, and deciding on your own timeline.", "Controller"]]},
+  { q: "A teammate proposes an ambitious topic for your group project. What is your first question?", o: [
+    ["“What’s the best version of this we could pull off?”", "Charismatic"],
+    ["“How does it compare with the two safer topics we discussed?”", "Thinker"],
+    ["“Where did you hear we can get data on this?”", "Skeptic"],
+    ["“Send me what you have. I want to look before we commit.”", "Controller"]]},
+  { q: "You’re about to spend $1,200 on a laptop. What would settle the decision?", o: [
+    ["Most people in your major use it and are happy with it.", "Follower"],
+    ["A review from a source you know isn’t paid by the brand.", "Skeptic"],
+    ["A comparison of three models on the specs that matter for your work.", "Thinker"],
+    ["Seeing what you could do with it that you can’t do now.", "Charismatic"]]},
+  { q: "Your advisor suggests adding a minor that would add a semester. You’re against it. What’s most likely to change your mind?", o: [
+    ["Seeing doors it opens that you hadn’t considered.", "Charismatic"],
+    ["The advisor names the downsides up front instead of just selling it.", "Skeptic"],
+    ["Two students a year ahead of you did it and say it paid off.", "Follower"],
+    ["The full course list and requirements, so you can map it out yourself.", "Controller"]]},
+  { q: "Someone is presenting a proposal to you. What would bother you most?", o: [
+    ["They ask for your decision before showing how they reached their recommendation.", "Thinker"],
+    ["They dodge a question about where a number came from.", "Skeptic"],
+    ["They call it a completely new approach that no one has tried.", "Follower"],
+    ["They’ve already decided for you and just want a yes.", "Controller"]]},
+  { q: "A friend proposes a spring break trip in the group chat. What’s your reply?", o: [
+    ["“I’m in. What’s the plan?”", "Charismatic"],
+    ["“What would it cost all-in, compared with going home?”", "Thinker"],
+    ["“Who says it’s cheap in March?”", "Skeptic"],
+    ["“Send me the options and I’ll look at flights.”", "Controller"]]}
+];
+
+// How many times each style is offered (8 each by design).
+const OFFERED = {};
+ORDER.forEach(s => OFFERED[s] = 0);
+QUESTIONS.forEach(q => q.o.forEach(([, s]) => OFFERED[s]++));
+
+function shuffle(a) { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+const ORDERED = QUESTIONS.map(q => ({ q: q.q, o: shuffle(q.o) }));
+const answers = new Array(QUESTIONS.length).fill(null);
+let idx = 0;
+
+const $ = id => document.getElementById(id);
+function render() {
+  const item = ORDERED[idx];
+  $("count").textContent = `Question ${idx + 1} of ${ORDERED.length}`;
+  $("fill").style.width = `${(idx / ORDERED.length) * 100}%`;
+  $("qtext").textContent = item.q;
+  const box = $("opts"); box.innerHTML = "";
+  item.o.forEach(([text, style], k) => {
+    const id = `q${idx}o${k}`;
+    const lab = document.createElement("label"); lab.className = "opt"; lab.htmlFor = id;
+    const inp = document.createElement("input"); inp.type = "radio"; inp.name = `q${idx}`; inp.id = id; inp.value = style;
+    if (answers[idx] === style) inp.checked = true;
+    inp.addEventListener("change", () => { answers[idx] = style; $("next").disabled = false; });
+    const span = document.createElement("span"); span.textContent = text;
+    lab.append(inp, span); box.append(lab);
+  });
+  $("back").hidden = idx === 0;
+  $("next").disabled = answers[idx] === null;
+  $("next").textContent = idx === ORDERED.length - 1 ? "See my result" : "Next";
+}
+
+function score() {
+  const counts = {}; ORDER.forEach(s => counts[s] = 0);
+  answers.forEach(s => { if (s) counts[s]++; });
+  const ranked = ORDER.slice().sort((a, b) => counts[b] - counts[a] || ORDER.indexOf(a) - ORDER.indexOf(b));
+  const top = counts[ranked[0]];
+  const close = ranked.filter(s => counts[s] >= top - 1 && counts[s] >= 2);
+  return { counts, ranked, close };
+}
+
+function showResult() {
+  const { counts, ranked, close } = score();
+  let name, lede, blend = false, wide = false;
+  if (close.length >= 3) { wide = true; name = "A mix of styles"; lede = `No single default. You lean toward ${close.slice(0, 3).join(", ").replace(/, ([^,]*)$/, ", and $1")}, depending on the situation.`; }
+  else if (close.length === 2) { blend = true; name = `${close[0]} + ${close[1]}`; lede = `${STYLES[close[0]].lede} You also have a strong ${close[1]} streak.`; }
+  else { name = ranked[0]; lede = STYLES[ranked[0]].lede; }
+  const main = STYLES[ranked[0]];
+  const second = blend ? STYLES[close[1]] : null;
+
+  const bars = ORDER.map(s => {
+    const pct = Math.round(counts[s] / OFFERED[s] * 100);
+    const isTop = (blend || wide) ? close.includes(s) : s === ranked[0];
+    return `<div class="score${isTop ? " top" : ""}"><span>${s}</span><div class="track" role="img" aria-label="${s}: chosen ${counts[s]} of ${OFFERED[s]} times"><div class="fill" style="width:${pct}%"></div></div><span class="n">${counts[s]}/${OFFERED[s]}</span></div>`;
+  }).join("");
+
+  const res = $("result");
+  res.innerHTML = `
+    <div class="card">
+      <p class="eyebrow">Your default style</p>
+      <p class="result-name">${name}</p>
+      <p class="lede">${lede}</p>
+      <div class="facts">
+        <div class="fact"><b>Strongest appeal for you</b><p>${main.appeal}${second ? ` Then: ${second.appeal.charAt(0).toLowerCase() + second.appeal.slice(1)}` : ""}</p></div>
+        <div class="fact"><b>What persuades you</b><p>${main.persuades}</p></div>
+        <div class="fact"><b>Watch for this when you write</b><p>${main.blind}</p></div>
+      </div>
+    </div>
+    <div class="card" style="margin-top:14px">
+      <h2 class="sec">How often you chose each style</h2>
+      <div class="scores">${bars}</div>
+      <p class="note" style="margin-top:10px">Each style was offered 8 times across the 10 questions.</p>
+    </div>
+    <div class="callout" style="margin-top:14px">
+      <h2>Your executive may not be you.</h2>
+      <p>Your team is about to write for a ProComm executive whose style may be very different from yours. Notice when you’re writing for yourself.</p>
+    </div>
+    <p class="note" style="margin-top:12px">This is a default, not a fixed type. Most people shift styles as the stakes change, and most are a blend.</p>
+    <div class="nav" style="margin-top:14px"><button type="button" class="ghost" id="retake">Take it again</button></div>`;
+  $("quiz").hidden = true; res.hidden = false;
+  $("retake").addEventListener("click", () => { answers.fill(null); idx = 0; res.hidden = true; $("quiz").hidden = false; render(); window.scrollTo(0, 0); });
+  window.scrollTo(0, 0);
+}
+
+$("next").addEventListener("click", () => {
+  if (answers[idx] === null) return;
+  if (idx < ORDERED.length - 1) { idx++; render(); } else { showResult(); }
+});
+$("back").addEventListener("click", () => { if (idx > 0) { idx--; render(); } });
+$("qform").addEventListener("submit", e => e.preventDefault());
+render();
+</script>
+</body>
+</html>
